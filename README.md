@@ -12,6 +12,7 @@ Motion Planning for robot.
 - python 3.9.6
 - mqtt
 - ros-noetic
+- react
 
 
    [dill]: <https://github.com/joemccann/dillinger>
