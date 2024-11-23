@@ -78,38 +78,71 @@
 
 ## **תרשים ארכיטקטורה (Mermaid)**
 
-```mermaid
-graph TD
-    UI[Client (Web/Frontend)]
-    API[API Gateway]
+graph TB
+    %% Styles
+    classDef client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef gateway fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef core fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef support fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef queue fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef storage fill:#fff8e1,stroke:#ffa000,stroke-width:2px
 
-    UI --> API
-    API --> CaseService[Case Service]
-    API --> UserService[User Service]
-    API --> DocumentService[Document Service]
-    API --> HearingService[Hearing Service]
-    API --> NotificationService[Notification Service]
-    API --> AuditService[Audit Service]
-    API --> SearchService[Search Service]
+    %% Frontend & Gateway
+    Client[לקוח Web/Mobile]:::client
+    Gateway[API Gateway]:::gateway
 
-    subgraph Async Communication
-        CaseService -->|RabbitMQ| NotificationService
-        CaseService -->|Kafka| AuditService
-        DocumentService -->|Kafka| AuditService
-        HearingService -->|RabbitMQ| NotificationService
-        HearingService -->|Kafka| AuditService
+    %% Core Services
+    subgraph CoreServices[שירותי ליבה]
+        direction LR
+        Case[ניהול תיקים]:::core
+        User[ניהול משתמשים]:::core
+        Doc[ניהול מסמכים]:::core
+        Hearing[ניהול דיונים]:::core
     end
 
-    subgraph Sync Communication
-        CaseService -->|REST| UserService
-        CaseService -->|REST| DocumentService
-        HearingService -->|REST| CaseService
+    %% Support Services
+    subgraph SupportServices[שירותי תמיכה]
+        direction LR
+        Notify[התראות]:::support
+        Audit[מעקב]:::support
+        Search[חיפוש]:::support
     end
 
-    SearchService -->|Elasticsearch| AuditService
-```
+    %% Message Queues
+    subgraph Queues[תורי הודעות]
+        direction LR
+        RabbitMQ{RabbitMQ}:::queue
+        Kafka{Kafka}:::queue
+    end
 
----
+    %% Storage
+    subgraph Storage[אחסון]
+        direction LR
+        DB[(PostgreSQL)]:::storage
+        ES[(Elasticsearch)]:::storage
+        S3[(Amazon S3)]:::storage
+        Redis[(Redis Cache)]:::storage
+    end
+
+    %% Main Flow
+    Client --> |1. פניית משתמש| Gateway
+    Gateway --> |2. ניתוב והרשאות| CoreServices
+    Gateway --> |2. ניתוב והרשאות| SupportServices
+
+    %% Core Services Flow
+    Case --> |3. שמירת נתוני תיק| DB
+    Doc --> |3. שמירת מסמכים| S3
+    User --> |3. אימות והרשאות| Redis
+    Hearing --> |3. תזמון דיונים| DB
+
+    %% Async Communication
+    CoreServices --> |4. הודעות מערכת| RabbitMQ
+    CoreServices --> |4. תיעוד שינויים| Kafka
+    RabbitMQ --> |5. שליחת התראות| Notify
+    Kafka --> |5. תיעוד פעולות| Audit
+
+    %% Search Flow
+    Search --> |6. אינדוקס וחיפוש| ES
 
 ## **יתרונות הארכיטקטורה**
 1. **הפרדה ברורה**: חלוקה ברורה לתחומי אחריות מונעת תלותיות בין שירותים.
