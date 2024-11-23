@@ -2,7 +2,7 @@
 # מערכת ניהול בתי דין - ארכיטקטורה מבוססת מיקרו-שירותים
 
 ## **צד שרת**
-ניתן לראות את הקוד https://github.com/LeahFeldh
+ניתן לראות את הקוד [כאן](https://github.com/LeahFeldheim/CourtsTask/tree/master/CourtsTaskAPI)
 ## **צד לקוח**
 ניתן לראות את הקוד [כאן](https://github.com/LeahFeldheim/CourtsTask/tree/master/src)
 ## **תיאור המערכת**
