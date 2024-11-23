@@ -78,6 +78,7 @@
 
 ## **תרשים ארכיטקטורה (Mermaid)**
 
+```mermaid
 graph TB
     %% Styles
     classDef client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -143,6 +144,7 @@ graph TB
 
     %% Search Flow
     Search --> |6. אינדוקס וחיפוש| ES
+---
 
 ## **יתרונות הארכיטקטורה**
 1. **הפרדה ברורה**: חלוקה ברורה לתחומי אחריות מונעת תלותיות בין שירותים.
